@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-US">
+	<head>
+		<meta charset="utf-8">
+		<title>jumping dynamics</title>
+		<style>
+			BODY { font-family: Arial, Helvetica, sans serif; font-size:11px; }
+			CANVAS { border: 1px solid #000000; }
+		</style>
+	</head>
+	<body>
+	
+		<canvas id="court" width="700" height="525">your browser really sucks.</canvas>
+		<div>
+			<b>CONTROLS:</b>
+			<ul>
+				<li>Use the arrow keys to move around the court</li>
+				<li>Press 'J' to jump</li>
+		</ul>
+		</div>
+		<div>
+			<b>TODO:</b>
+			<ul>
+				<li>reset player graphic to standing if not moving</li>
+				<li>shrink court</li>
+				<li>add bounding limits</li>
+				<del><li>preload all graphics</li></del>
+				<del><li>add running animation</li></del>
+				<del><li>graphic references as sprite offsets, not filenames</li></del>
+			</ul>
+		</div>
+	
+		<script src="libs/requestAnimationFrame.js"></script>
+		<script src="libs/Player.js"></script>
+		<script src="libs/Ball.js"></script>
+		<script>
+			
+			window.onload = function() {
+			
+				var canvas = document.getElementById("court");
+				var context = canvas.getContext("2d");
+				var player = new Player(), court = new Image(), ball = new Ball();
+				
+				ball.x = canvas.width/2;
+				ball.y = canvas.height/2;
+				
+				court.src = "images/court.png";
+				
+				player.x = canvas.width/2 - 200;
+				player.y = canvas.height/2 - 30;
+				
+				window.addEventListener("keydown",keyDown,false);
+				window.addEventListener("keyup",keyUp,false);
+				
+				function keyDown(event) {
+					// the assumption is that directional keys will be pressed for extended periods of time
+					switch(event.which) {
+						case 74:	// 'J'
+							player.jump();
+							break;
+						case 37:	// left arrow
+							player.movePlayer(-5,0);
+							break;
+						case 39:	// right arrow
+							player.movePlayer(5,0);
+							break;
+						case 38:	// up arrow
+							player.movePlayer(0,-5);
+							break;
+						case 40:	// down arrow
+							player.movePlayer(0,5);
+							break;
+					}
+				}
+				
+				function keyUp(event) {
+					player.isRunning = false;
+				}
+								
+				(function drawFrame() {
+					window.requestAnimationFrame(drawFrame);
+					context.clearRect(0,0,canvas.width,canvas.height);
+					context.drawImage(court,0,0);
+					
+					if(player.isJumping) player.updateJumpState();
+					if(player.isFalling) player.updateFallState();
+					
+					// collission detection with ball
+					if((ball.x + ball.radius) <= (player.x + 100)) {  // fixed width of each player sprite is 100 pixels
+						ball.vx += 7;
+					}
+					
+					player.draw(context);
+					ball.draw(context);
+				}());
+				
+			};
+			
+		</script>
+	
+	</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<h1>testing Ball.js</h1>
+		<script src="libs/requestAnimationFrame.js"></script>
+		<script src="libs/Ball.js"></script>
+		<script>
+			window.onload = function() {
+				var canvas = document.createElement('canvas');
+				canvas.width = 600;
+				canvas.height = 450;
+				canvas.style.border = '1px solid #000000';
+				document.body.appendChild(canvas);
+				
+				var context = canvas.getContext('2d'),
+					ball = new Ball(),
+					vx = 1,
+					vy = 1;
+					
+				ball.x = 5;
+				ball.y = 10;
+				
+				(function drawFrame() {
+					window.requestAnimationFrame(drawFrame);
+					context.clearRect(0,0,canvas.width,canvas.height);
+					
+					// collission box
+					var platformTop = 250;
+					context.fillStyle = '#676767';
+					context.fillRect(200,platformTop,200,40);
+					
+					/* COLLISION ALGORITHM */
+					// if the ball hits the upper-part of the platform, make it bounce
+					if((ball.y + ball.radius) >= platformTop) {
+						vy = -vy;
+					} else {
+						vy = vy + 2;
+					}
+					//console.log(vy);
+
+					ball.x += vx;
+					ball.y += vy;
+					ball.draw(context);
+				}());
+			};
+		</script>
+	</body>
+</html>
